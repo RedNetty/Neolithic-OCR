@@ -1,4 +1,4 @@
-package org.codered.neolithic.utils;
+package org.codered.neolithic.images.processing;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

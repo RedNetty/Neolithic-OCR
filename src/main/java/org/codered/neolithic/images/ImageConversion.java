@@ -1,14 +1,22 @@
-package org.codered.neolithic;
+/**
+ * The ImageConversion class handles the conversion of images to text using the Google Vision API.
+ * It provides a graphical user interface for users to input AI instructions, review and edit the converted text,
+ * and send the refined text to an AI service for further processing.
+ */
+package org.codered.neolithic.images;
 
 import com.google.api.gax.core.FixedCredentialsProvider;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.vision.v1.*;
 import com.google.cloud.vision.v1.Image;
 import com.google.protobuf.ByteString;
-import org.codered.neolithic.utils.ConversionRefiner;
+import org.codered.neolithic.Neolithic;
+import org.codered.neolithic.images.processing.ConversionRefiner;
+import org.codered.neolithic.openai.AIRequest;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,12 +25,16 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The ImageConversion class provides methods to convert images to text, display the converted text,
+ * and facilitate user interaction for sending the text to an AI service.
+ */
 public class ImageConversion {
     private JFrame frame;
 
     /**
-     * Constructor for ImageConversion.
-     * Initializes the frame and starts the conversion process.
+     * Constructor for the ImageConversion class.
+     * Initializes the frame and triggers the image conversion process.
      *
      * @param bufferedImage The image to be converted.
      */
@@ -37,9 +49,9 @@ public class ImageConversion {
     }
 
     /**
-     * Creates a dialog window to display the converted text and allow user editing.
+     * Displays the converted text in a dialog with user interaction options.
      *
-     * @param text The OCR converted text to be displayed.
+     * @param text The converted text to be displayed.
      */
     private void displayConvertedText(String text) {
         JDialog previewDialog = new JDialog(frame, "Converted Text");
@@ -48,6 +60,18 @@ public class ImageConversion {
         JTextArea textArea = createTextArea(text);
         JButton acceptButton = createAcceptButton(previewDialog, textArea, instructionsArea);
 
+        // Styling for JTextAreas and JButton
+        instructionsArea.setBackground(Color.DARK_GRAY);
+        instructionsArea.setForeground(Color.WHITE);
+        textArea.setBackground(Color.DARK_GRAY);
+        textArea.setForeground(Color.PINK);
+        acceptButton.setBackground(Color.BLACK);
+        acceptButton.setFont(new Font("Arial", Font.PLAIN, 14));
+        acceptButton.setFocusPainted(false);
+        acceptButton.setBorder(BorderFactory.createEmptyBorder());
+        acceptButton.setContentAreaFilled(false);
+
+        // Add components to the dialog
         previewDialog.add(new JScrollPane(instructionsArea), BorderLayout.NORTH);
         previewDialog.add(new JScrollPane(textArea), BorderLayout.CENTER);
         previewDialog.add(acceptButton, BorderLayout.SOUTH);
@@ -55,10 +79,10 @@ public class ImageConversion {
     }
 
     /**
-     * Detects text in a given BufferedImage using Google Vision API.
+     * Detects text in a given BufferedImage using the Google Vision API.
      *
      * @param image The image to be processed.
-     * @return The detected text or error message.
+     * @return The detected text or an error message.
      * @throws Exception If an error occurs during text detection.
      */
     public String detectText(BufferedImage image) throws Exception {
@@ -70,7 +94,6 @@ public class ImageConversion {
             return processResponses(response.getResponsesList());
         }
     }
-    // ... (continuation from the previous snippet)
 
     /**
      * Configures the main dialog window for displaying text.
@@ -94,7 +117,10 @@ public class ImageConversion {
         instructionsArea.setLineWrap(true);
         instructionsArea.setWrapStyleWord(true);
         instructionsArea.setEditable(true);
-        instructionsArea.setBorder(BorderFactory.createTitledBorder("Enter AI Instructions (example: Solve this math problem)"));
+
+        TitledBorder titledBorder =  BorderFactory.createTitledBorder("Enter AI Instructions (example: Solve this math problem)");
+        titledBorder.setTitleColor(Color.WHITE);
+        instructionsArea.setBorder(titledBorder);
         return instructionsArea;
     }
 
@@ -109,7 +135,9 @@ public class ImageConversion {
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setEditable(true);
-        textArea.setBorder(BorderFactory.createTitledBorder("Proofread Your Converted Text "));
+        TitledBorder titledBorder = BorderFactory.createTitledBorder("Proofread Your Converted Text ");
+        titledBorder.setTitleColor(Color.WHITE);
+        textArea.setBorder(titledBorder);
         return textArea;
     }
 
@@ -119,7 +147,7 @@ public class ImageConversion {
      * @param dialog           The parent dialog to be closed on button press.
      * @param textArea         The JTextArea from which to capture text.
      * @param instructionsArea The JTextArea containing user instructions.
-     * @return JButton configured with action listener.
+     * @return JButton configured with an action listener.
      */
     private JButton createAcceptButton(JDialog dialog, JTextArea textArea, JTextArea instructionsArea) {
         JButton acceptButton = new JButton("Send to AI");
@@ -128,7 +156,7 @@ public class ImageConversion {
             public void actionPerformed(ActionEvent e) {
                 String editedText = textArea.getText();
                 String userInstructions = instructionsArea.getText();
-                // Process 'editedText' and 'userInstructions' as needed
+                new AIRequest(userInstructions, editedText).sendRequest();
                 dialog.dispose();
             }
         });
@@ -142,7 +170,7 @@ public class ImageConversion {
      * @throws FileNotFoundException If the credentials file is not found.
      */
     private GoogleCredentials loadGoogleCredentials() throws FileNotFoundException {
-        try (FileInputStream serviceAccountStream = new FileInputStream("service_account.json")) {
+        try (FileInputStream serviceAccountStream = new FileInputStream("src/main/resources/service_account.json")) {
             return GoogleCredentials.fromStream(serviceAccountStream);
         } catch (IOException e) {
             throw new FileNotFoundException("Service account file not found: " + e.getMessage());
@@ -175,6 +203,7 @@ public class ImageConversion {
      *
      * @param credentials GoogleCredentials for the client.
      * @return ImageAnnotatorSettings.
+     * @throws IOException If an error occurs while creating client settings.
      */
     private ImageAnnotatorSettings buildClientSettings(GoogleCredentials credentials) throws IOException {
         return ImageAnnotatorSettings.newBuilder().setCredentialsProvider(FixedCredentialsProvider.create(credentials)).build();

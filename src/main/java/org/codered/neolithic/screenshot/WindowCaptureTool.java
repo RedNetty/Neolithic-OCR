@@ -1,10 +1,12 @@
-package org.codered.neolithic;
+package org.codered.neolithic.screenshot;
 
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
-import org.codered.neolithic.utils.ImageEnhancer;
+import org.codered.neolithic.images.ImageConversion;
+import org.codered.neolithic.Neolithic;
+import org.codered.neolithic.images.processing.ImageEnhancer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -61,7 +63,7 @@ public class WindowCaptureTool implements NativeKeyListener {
     @Override
     public void nativeKeyPressed(NativeKeyEvent e) {
         boolean ctrlPressed = (e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0;
-        if (ctrlPressed && e.getKeyCode() == NativeKeyEvent.VC_PRINTSCREEN) {
+        if (ctrlPressed && e.getKeyCode() == NativeKeyEvent.VC_P) {
             SwingUtilities.invokeLater(this::toggleCapture);
         }
     }
@@ -70,6 +72,7 @@ public class WindowCaptureTool implements NativeKeyListener {
      * Sets up the main capture frame with necessary event listeners.
      */
     private void setupCaptureFrame() {
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setUndecorated(true);

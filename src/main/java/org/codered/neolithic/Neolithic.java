@@ -1,5 +1,8 @@
 package org.codered.neolithic;
 
+import org.codered.neolithic.screenshot.WindowCaptureTool;
+import org.codered.neolithic.utils.ConfigReader;
+
 import javax.swing.*;
 
 /**
@@ -8,6 +11,7 @@ import javax.swing.*;
 public class Neolithic {
     private static Neolithic instance;
     private final JFrame frame;
+    private static ConfigReader configReader;
 
     /**
      * Constructor for Neolithic. Initializes the main frame.
@@ -16,6 +20,7 @@ public class Neolithic {
      */
     public Neolithic(JFrame frame) {
         Neolithic.instance = this;
+        configReader = new ConfigReader();
         this.frame = frame;
     }
 
@@ -52,5 +57,9 @@ public class Neolithic {
      */
     public JFrame getFrame() {
         return frame;
+    }
+
+    public static ConfigReader getConfigReader() {
+        return configReader;
     }
 }
