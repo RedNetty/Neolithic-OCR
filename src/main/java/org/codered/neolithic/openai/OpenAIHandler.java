@@ -23,12 +23,12 @@ import java.util.List;
 public class OpenAIHandler {
 
     private final OpenAiService service;
+    private final AIRequest originalRequest;
     private JFrame chatFrame;
     private JTextPane chatTextPane;
     private JTextField userInputField;
     private JButton sendButton;
     private JLabel loadingLabel;
-    private final AIRequest originalRequest;
 
     /**
      * Constructor for the OpenAIHandler class.
@@ -137,20 +137,12 @@ public class OpenAIHandler {
                     loadingLabel.setVisible(true);
 
                     // Add the default system message to the conversation
-                    messages.add(new ChatMessage(ChatMessageRole.SYSTEM.value(),
-                            originalRequest.getInstructions() + ": " + originalRequest.getConvertedText()));
+                    messages.add(new ChatMessage(ChatMessageRole.SYSTEM.value(), originalRequest.getInstructions() + ": " + originalRequest.getConvertedText()));
 
                     // Perform API request
-                    ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest
-                            .builder()
-                            .model("gpt-4-1106-preview")
-                            .messages(messages)
-                            .maxTokens(2000)
-                            .temperature(0.5)
-                            .build();
+                    ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest.builder().model("gpt-4-1106-preview").messages(messages).maxTokens(2000).temperature(0.5).build();
 
-                    return service.createChatCompletion(chatCompletionRequest)
-                            .getChoices().get(0).getMessage().getContent();
+                    return service.createChatCompletion(chatCompletionRequest).getChoices().get(0).getMessage().getContent();
                 } catch (Exception e) {
                     e.printStackTrace();
                     showErrorDialog("An error occurred while communicating with the OpenAI API.");
@@ -186,9 +178,9 @@ public class OpenAIHandler {
     /**
      * Appends a message to the chat text pane with the specified sender, message, and text color.
      *
-     * @param sender The sender of the message (e.g., "You", "AI").
+     * @param sender  The sender of the message (e.g., "You", "AI").
      * @param message The content of the message.
-     * @param color The color of the text.
+     * @param color   The color of the text.
      */
     private void appendMessage(String sender, String message, Color color) {
         StyledDocument doc = chatTextPane.getStyledDocument();

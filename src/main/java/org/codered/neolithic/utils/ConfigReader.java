@@ -42,5 +42,4 @@ public class ConfigReader {
         return null; // Return null in case of failure
     }
 
-    // You can add more methods or functionality as needed
 }
