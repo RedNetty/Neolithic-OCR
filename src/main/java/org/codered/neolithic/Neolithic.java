@@ -1,6 +1,5 @@
 package org.codered.neolithic;
 
-import mdlaf.MaterialLookAndFeel;
 import org.codered.neolithic.screenshot.WindowCaptureTool;
 import org.codered.neolithic.utils.ConfigReader;
 
@@ -23,12 +22,6 @@ public class Neolithic {
         Neolithic.instance = this;
         configReader = new ConfigReader();
         this.frame = frame;
-        try {
-            UIManager.setLookAndFeel(new MaterialLookAndFeel());
-        }catch(UnsupportedLookAndFeelException e) {
-            System.err.println("Error: LaF (Material) could not be applied.");
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -53,7 +46,6 @@ public class Neolithic {
         try {
             new WindowCaptureTool();
         } catch (Exception e) {
-            System.err.println("Error: Window Capture could not be initialized.");
             e.printStackTrace();
         }
     }

@@ -4,9 +4,9 @@ import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
-import org.codered.neolithic.images.ImageConversion;
+import org.codered.neolithic.images.ImageConversionUtility;
 import org.codered.neolithic.Neolithic;
-import org.codered.neolithic.images.processing.ImageEnhancer;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -63,7 +63,7 @@ public class WindowCaptureTool implements NativeKeyListener {
     @Override
     public void nativeKeyPressed(NativeKeyEvent e) {
         boolean ctrlPressed = (e.getModifiers() & NativeKeyEvent.CTRL_MASK) != 0;
-        if (ctrlPressed && e.getKeyCode() == NativeKeyEvent.VC_P) {
+        if (ctrlPressed && e.getKeyCode() == NativeKeyEvent.VC_SHIFT) {
             SwingUtilities.invokeLater(this::toggleCapture);
         }
     }
@@ -226,7 +226,7 @@ public class WindowCaptureTool implements NativeKeyListener {
         try {
             BufferedImage windowCapture = screenCapture.getSubimage(x, y, width, height);
 
-            new ImageConversion(ImageEnhancer.enhanceImage(windowCapture));
+            new ImageConversionUtility().convertImageToText(windowCapture);
             cancelCapture(); // Reset capture states
             frame.setOpacity(0.0F); // Reset frame opacity
         } catch (Exception e) {
