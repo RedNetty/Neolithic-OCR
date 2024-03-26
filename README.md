@@ -26,37 +26,13 @@ To capture a screen area:
 3. A preview window will appear, showing the selected area.
 4. Confirm the capture, or cancel to start over.
 
-## Configuring Google Cloud Authentication
-To utilize the Google Vision integration in the Neolithic AI Tool, you need to authenticate with Google Cloud Platform. This is done through a `service_account.json` file, which contains your Google Cloud credentials.
 
 ### Step-by-Step Guide:
-1. **Create a Google Cloud Project**:
-   - Sign up or log in at [Google Cloud Console](https://console.cloud.google.com/).
-   - Create a new project.
+1. **Create an OpenAI API KEY**
 
-2. **Enable Google Vision API**:
-   - In your Google Cloud project, navigate to "API & Services" dashboard.
-   - Enable the Google Vision API for your project.
+2. **Input Generated Key Into Config File**
 
-3. **Create a Service Account**:
-   - Go to "IAM & Admin" > "Service Accounts".
-   - Create a new service account and assign necessary roles (e.g., Vision API User).
-
-4. **Generate `service_account.json` Key**:
-   - Click on the created service account.
-   - Go to "Keys", add a new key, select "JSON" and download it.
-
-5. **Add the JSON File to Your Project**:
-   - Rename the downloaded file to `service_account.json`.
-   - Place it in the root directory of your Neolithic AI Tool project.
-   - Add this file to your `.gitignore` to keep it secure.
-
-6. **Update Application Configuration**:
-   - Set up your application to use the `service_account.json` for authentication.
-
-### Important Notes:
-- Keep your `service_account.json` file secure and never expose it publicly.
-- Regularly review your service account permissions and audit your Google Cloud usage.
+3. **Compile and Run**
 
 ## Contributing
 Contributions to Neolithic AI Tool are welcome. Open an issue or a pull request for ideas for improvements or any issues encountered.
