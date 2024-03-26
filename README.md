@@ -21,7 +21,7 @@ To use the Neolithic AI Tool, you'll need to have Java installed on your machine
 Once you run the application, it initializes and waits for a capture command. 
 
 To capture a screen area:
-1. Press `Ctrl + PrintScreen`.
+1. Press `Ctrl + Shift`.
 2. Select the area of the screen you want to capture.
 3. A preview window will appear, showing the selected area.
 4. Confirm the capture, or cancel to start over.
