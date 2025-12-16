@@ -1,0 +1,7 @@
+{
+  "api": {
+    "openai": {
+      "token": "openAI key here"
+    }
+  }
+}

@@ -1,0 +1,112 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.example</groupId>
+  <artifactId>Neolithic-Tool</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>Archetype - Neolithic-Tool</name>
+  <url>http://maven.apache.org</url>
+
+
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.cloud</groupId>
+      <artifactId>google-cloud-vision</artifactId>
+      <version>3.28.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.github.vincenzopalazzo</groupId>
+      <artifactId>material-ui-swing</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.apis</groupId>
+      <artifactId>google-api-services-storage</artifactId>
+      <version>v1-rev20231117-2.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.gitlab.dumonts</groupId>
+      <artifactId>hunspell</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.theokanning.openai-gpt3-java</groupId>
+      <artifactId>service</artifactId>
+      <version>0.18.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.theokanning.openai-gpt3-java</groupId>
+      <artifactId>api</artifactId>
+      <version>0.18.0</version>
+    </dependency>
+      <!-- Other dependencies if any -->
+    <dependency>
+      <groupId>org.languagetool</groupId>
+      <artifactId>language-en</artifactId>
+      <version>5.9</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.12.0</version> </dependency>
+    <dependency>
+      <groupId>com.github.kwhat</groupId>
+      <artifactId>jnativehook</artifactId>
+      <version>2.2.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains</groupId>
+      <artifactId>annotations</artifactId>
+      <version>24.1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.sourceforge.tess4j</groupId>
+      <artifactId>tess4j</artifactId>
+      <version>5.2.1</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.2</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>com.github.tesseract-ocr</groupId>
+                  <artifactId>tessdata</artifactId>
+                  <version>4.1.1</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${project.basedir}/tess4j</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>21</source>
+          <target>21</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <repositories>
+  </repositories>
+
+</project>
