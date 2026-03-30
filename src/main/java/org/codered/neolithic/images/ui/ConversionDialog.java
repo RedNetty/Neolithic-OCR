@@ -75,6 +75,13 @@ public class ConversionDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 String editedText = textArea.getText();
                 String userInstructions = instructionsArea.getText();
+
+                // Guard: don't open the AI chat window if there's no text to work with.
+                if (editedText == null || editedText.isBlank()) {
+                    showErrorDialog("No text to send. Please run OCR or enter text manually before sending to AI.");
+                    return;
+                }
+
                 new AIRequest(userInstructions, editedText).sendRequest();
                 dispose();
             }

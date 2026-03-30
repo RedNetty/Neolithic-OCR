@@ -15,8 +15,12 @@ import java.awt.*;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class OpenAIHandler {
+
+    private static final Logger LOGGER = Logger.getLogger(OpenAIHandler.class.getName());
 
     private final OpenAiService service;
     private final AIRequest originalRequest;
@@ -30,6 +34,8 @@ public class OpenAIHandler {
         String openAiToken = Neolithic.getConfigReader().getOpenAiToken();
         this.service = new OpenAiService(openAiToken, Duration.ofHours(2));
         this.originalRequest = originalRequest;
+        // Set L&F decoration once, here in the constructor, before any frames are created.
+        JFrame.setDefaultLookAndFeelDecorated(true);
         initializeChatFrame();
     }
 
@@ -114,7 +120,7 @@ public class OpenAIHandler {
 
                     return service.createChatCompletion(chatCompletionRequest).getChoices().get(0).getMessage().getContent();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.SEVERE, "Error communicating with OpenAI API", e);
                     showErrorDialog("An error occurred while communicating with the OpenAI API.");
                     return null;
                 }
@@ -129,7 +135,7 @@ public class OpenAIHandler {
                         appendMessage("AI", aiResponse, Color.ORANGE);
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.SEVERE, "Error retrieving AI response from worker", e);
                 } finally {
                     userInputField.setEnabled(true);
                     loadingLabel.setVisible(false);
@@ -148,7 +154,7 @@ public class OpenAIHandler {
         try {
             doc.insertString(doc.getLength(), "\n" + sender + ": " + message + "\n", set);
         } catch (BadLocationException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.WARNING, "Failed to append message to chat pane", e);
         }
 
         chatTextPane.setCaretPosition(doc.getLength());
