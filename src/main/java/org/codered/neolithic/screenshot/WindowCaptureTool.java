@@ -211,7 +211,6 @@ public class WindowCaptureTool implements NativeKeyListener {
      */
     private void completeCapture() {
         captureWindow(startPoint.x, startPoint.y, Math.abs(endPoint.x - startPoint.x), Math.abs(endPoint.y - startPoint.y));
-        System.out.println("Capture accepted!");
     }
 
     /**

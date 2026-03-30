@@ -4,16 +4,25 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.FileReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ConfigReader {
 
+    private static final Logger LOGGER = Logger.getLogger(ConfigReader.class.getName());
     private static final String CONFIG_FILE_PATH = "src/main/resources/config.json";
 
     public String getOpenAiToken() {
+        // Check environment variable first (preferred for production)
+        String envToken = System.getenv("OPENAI_API_KEY");
+        if (envToken != null && !envToken.isBlank()) {
+            return envToken;
+        }
+
+        // Fall back to config.json for local development
         try (FileReader reader = new FileReader(CONFIG_FILE_PATH)) {
             JsonObject jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
 
-            // Assuming the structure is like {"api": {"openai": {"token": "your_openai_token_here"}}}
             if (jsonObject.has("api")) {
                 JsonObject apiObject = jsonObject.getAsJsonObject("api");
 
@@ -21,25 +30,26 @@ public class ConfigReader {
                     JsonObject openaiObject = apiObject.getAsJsonObject("openai");
 
                     if (openaiObject.has("token")) {
-                        return openaiObject.get("token").getAsString();
+                        String token = openaiObject.get("token").getAsString();
+                        if (token.isBlank() || token.equals("openAI key here")) {
+                            LOGGER.warning("OpenAI token is not configured. Set the OPENAI_API_KEY environment variable or update config.json.");
+                            return null;
+                        }
+                        return token;
                     } else {
-                        // Handle the case where "token" is not found
-                        System.err.println("Error: 'token' not found in the 'openai' object.");
+                        LOGGER.warning("'token' not found in the 'openai' config object.");
                     }
                 } else {
-                    // Handle the case where "openai" is not found
-                    System.err.println("Error: 'openai' object not found in the 'api' object.");
+                    LOGGER.warning("'openai' object not found in the 'api' config object.");
                 }
             } else {
-                // Handle the case where "api" is not found
-                System.err.println("Error: 'api' object not found in the JSON file.");
+                LOGGER.warning("'api' object not found in config.json.");
             }
         } catch (Exception e) {
-            // Handle any exceptions that might occur during file reading or JSON parsing
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Failed to read config.json", e);
         }
 
-        return null; // Return null in case of failure
+        return null;
     }
 
 }

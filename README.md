@@ -1,41 +1,91 @@
-# Neolithic AI Tool
+# Neolithic OCR
 
-## Overview
-Neolithic AI Tool is a Java-based application designed for screen capturing with additional processing capabilities. It features a Window Capture Tool that allows users to select and capture specific areas of their screen, potentially for further image processing or analysis.
+**Screen-capture OCR tool with AI-powered text analysis, built in Java.**
 
-### Key Features
-- **Screen Capture**: Capture any part of your screen with a simple and intuitive interface.
-- **Area Selection**: Select specific areas for capture using your mouse.
-- **Preview Functionality**: Preview the captured area before finalizing the capture.
-- **Extendable**: Designed to be easily extendable for additional image processing tasks.
+Neolithic is a desktop utility that lets you capture any region of your screen, extract text from it using Tesseract OCR, and then optionally send that text to GPT-4 for analysis, summarization, or Q&A — all without leaving your workflow.
 
-## Installation
-To use the Neolithic AI Tool, you'll need to have Java installed on your machine. Follow these steps to set up the tool:
+## Features
 
-1. Clone the repository or download the source code.
-2. Open the project in your favorite Java IDE (like Eclipse, IntelliJ IDEA, or NetBeans).
-3. Ensure you have the latest Java Development Kit (JDK) installed.
-4. Build and run the application from the IDE.
+- **Global hotkey capture** — Press `Ctrl + Shift` from any application to trigger the capture overlay
+- **Freehand area selection** — Click and drag to select exactly the region you want
+- **Live preview** — See the selected area before confirming
+- **Tesseract OCR** — Accurate text extraction from screenshots using the bundled `eng.traineddata` model
+- **GPT-4 integration** — Send extracted text to OpenAI for analysis with a custom prompt
+- **Interactive chat** — Continue the conversation with the AI in a built-in chat window
+- **Image preprocessing** — Converts and processes captured images for better OCR accuracy
+
+## Tech Stack
+
+- **Java 17**
+- **Swing** (desktop UI)
+- **Tesseract / Tess4J** (OCR)
+- **OpenAI Java SDK** (GPT-4 API)
+- **JNativeHook** (global keyboard shortcuts)
+- **Maven**
+
+## Setup
+
+### Prerequisites
+
+- Java 17+
+- Maven 3.8+
+- An [OpenAI API key](https://platform.openai.com/api-keys)
+
+### Configuration
+
+**Option 1: Environment variable (recommended)**
+
+Set `OPENAI_API_KEY` in your environment:
+
+```bash
+# Linux/macOS
+export OPENAI_API_KEY=sk-your-key-here
+
+# Windows
+set OPENAI_API_KEY=sk-your-key-here
+```
+
+**Option 2: Config file**
+
+```bash
+cp src/main/resources/config.example.json src/main/resources/config.json
+# Edit config.json and add your API key
+```
+
+> ⚠️ Never commit `config.json` — it's excluded by `.gitignore`.
+
+### Build & Run
+
+```bash
+mvn clean install
+mvn exec:java -Dexec.mainClass="org.codered.neolithic.Neolithic"
+```
 
 ## Usage
-Once you run the application, it initializes and waits for a capture command. 
 
-To capture a screen area:
-1. Press `Ctrl + Shift`.
-2. Select the area of the screen you want to capture.
-3. A preview window will appear, showing the selected area.
-4. Confirm the capture, or cancel to start over.
+1. Launch the application
+2. Press **`Ctrl + Shift`** anywhere on your screen
+3. Click and drag to select the area you want to capture
+4. Review the preview — click **Accept** to proceed
+5. Neolithic runs OCR on the selection and opens a chat window
+6. The extracted text is automatically sent to GPT-4 with a default prompt
+7. Continue the conversation to ask follow-up questions about the captured content
 
+## Project Structure
 
-### Step-by-Step Guide:
-1. **Create an OpenAI API KEY**
-
-2. **Input Generated Key Into Config File**
-
-3. **Compile and Run**
-
-## Contributing
-Contributions to Neolithic AI Tool are welcome. Open an issue or a pull request for ideas for improvements or any issues encountered.
+```
+src/main/java/org/codered/neolithic/
+├── customize/          # Configuration management
+├── images/             # OCR conversion, image preprocessing, UI
+│   ├── conversion/     # Image-to-text pipeline
+│   ├── processing/     # Image manipulation utilities
+│   └── ui/             # Conversion result UI
+├── openai/             # OpenAI API handler and request models
+├── screenshot/         # Screen capture tool and hotkey listener
+├── utils/              # Config reader (env + JSON)
+└── Neolithic.java      # Application entry point
+```
 
 ## License
-Neolithic AI Tool is open-source software licensed under the MIT license. See the LICENSE file for more details.
+
+Open-source under the MIT license.

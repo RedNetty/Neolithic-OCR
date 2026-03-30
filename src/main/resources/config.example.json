@@ -1,0 +1,7 @@
+{
+  "api": {
+    "openai": {
+      "token": "sk-your-openai-api-key-here"
+    }
+  }
+}
