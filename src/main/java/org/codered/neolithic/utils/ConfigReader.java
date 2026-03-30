@@ -3,14 +3,14 @@ package org.codered.neolithic.utils;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ConfigReader {
 
     private static final Logger LOGGER = Logger.getLogger(ConfigReader.class.getName());
-    private static final String CONFIG_FILE_PATH = "src/main/resources/config.json";
 
     public String getOpenAiToken() {
         // Check environment variable first (preferred for production)
@@ -19,9 +19,13 @@ public class ConfigReader {
             return envToken;
         }
 
-        // Fall back to config.json for local development
-        try (FileReader reader = new FileReader(CONFIG_FILE_PATH)) {
-            JsonObject jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
+        // Fall back to config.json loaded from classpath (works in both IDE and JAR)
+        try (InputStream is = ConfigReader.class.getResourceAsStream("/config.json")) {
+            if (is == null) {
+                LOGGER.warning("config.json not found on classpath. Set the OPENAI_API_KEY environment variable or provide config.json in resources.");
+                return null;
+            }
+            JsonObject jsonObject = JsonParser.parseReader(new InputStreamReader(is)).getAsJsonObject();
 
             if (jsonObject.has("api")) {
                 JsonObject apiObject = jsonObject.getAsJsonObject("api");
@@ -46,7 +50,7 @@ public class ConfigReader {
                 LOGGER.warning("'api' object not found in config.json.");
             }
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, "Failed to read config.json", e);
+            LOGGER.log(Level.SEVERE, "Failed to read config.json from classpath", e);
         }
 
         return null;

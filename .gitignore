@@ -36,3 +36,8 @@ src/main/resources/config.json
 ### Logs ###
 *.log
 logs/
+
+### Build artifacts ###
+*.class
+*.jar
+!*-sources.jar
