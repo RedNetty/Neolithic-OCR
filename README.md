@@ -1,91 +1,88 @@
 # Neolithic OCR
 
-**Screen-capture OCR tool with AI-powered text analysis, built in Java.**
+A Java desktop tool that captures a region of the screen, extracts the text with Tesseract and sends it to an OpenAI model with your instructions.
 
-Neolithic is a desktop utility that lets you capture any region of your screen, extract text from it using Tesseract OCR, and then optionally send that text to GPT-4 for analysis, summarization, or Q&A — all without leaving your workflow.
+[![CI](https://github.com/RedNetty/Neolithic-OCR/actions/workflows/ci.yml/badge.svg)](https://github.com/RedNetty/Neolithic-OCR/actions/workflows/ci.yml) ![Java](https://img.shields.io/badge/java-21-blue)
+
+Neolithic runs in the background and listens for a global hotkey. When triggered, you drag a box around any text on screen (a worksheet, a PDF, a web page), proofread the OCR result, type an instruction such as "explain this" or "solve this math problem", and get the answer in a chat window. It was written to help students with learning disabilities work with text they find hard to read.
 
 ## Features
 
-- **Global hotkey capture** — Press `Ctrl + Shift` from any application to trigger the capture overlay
-- **Freehand area selection** — Click and drag to select exactly the region you want
-- **Live preview** — See the selected area before confirming
-- **Tesseract OCR** — Accurate text extraction from screenshots using the bundled `eng.traineddata` model
-- **GPT-4 integration** — Send extracted text to OpenAI for analysis with a custom prompt
-- **Interactive chat** — Continue the conversation with the AI in a built-in chat window
-- **Image preprocessing** — Converts and processes captured images for better OCR accuracy
+- Global hotkey (`Ctrl` + `Shift`) that works from any application
+- Click-and-drag area selection with a live preview
+- OCR with Tess4J, using the bundled English model in `tessdata/`
+- Text cleanup with LanguageTool spelling and grammar correction
+- Editable OCR result and instruction box before anything is sent
+- Chat window for follow-up questions, using `gpt-4-turbo-preview`
 
-## Tech Stack
+## Requirements
 
-- **Java 17**
-- **Swing** (desktop UI)
-- **Tesseract / Tess4J** (OCR)
-- **OpenAI Java SDK** (GPT-4 API)
-- **JNativeHook** (global keyboard shortcuts)
-- **Maven**
+- JDK 21
+- Maven
+- An OpenAI API key
+- A desktop session (the app uses Swing and a native keyboard hook)
 
-## Setup
-
-### Prerequisites
-
-- Java 17+
-- Maven 3.8+
-- An [OpenAI API key](https://platform.openai.com/api-keys)
-
-### Configuration
-
-**Option 1: Environment variable (recommended)**
-
-Set `OPENAI_API_KEY` in your environment:
+## Building
 
 ```bash
-# Linux/macOS
-export OPENAI_API_KEY=sk-your-key-here
-
-# Windows
-set OPENAI_API_KEY=sk-your-key-here
+mvn clean package -DskipTests
 ```
 
-**Option 2: Config file**
+This is the same command CI runs. `mvn test` runs the unit tests in `src/test`.
+
+## Configuration
+
+The API key is read from the `OPENAI_API_KEY` environment variable:
+
+```bash
+export OPENAI_API_KEY=your-key        # Linux/macOS
+set OPENAI_API_KEY=your-key           # Windows cmd
+```
+
+If the variable is not set, the app falls back to `config.json` on the classpath. Copy the example and add your key:
 
 ```bash
 cp src/main/resources/config.example.json src/main/resources/config.json
-# Edit config.json and add your API key
 ```
 
-> ⚠️ Never commit `config.json` — it's excluded by `.gitignore`.
-
-### Build & Run
-
-```bash
-mvn clean install
-mvn exec:java -Dexec.mainClass="org.codered.neolithic.Neolithic"
+```json
+{
+  "api": {
+    "openai": {
+      "token": "your-key"
+    }
+  }
+}
 ```
+
+`config.json` is listed in `.gitignore`.
 
 ## Usage
 
-1. Launch the application
-2. Press **`Ctrl + Shift`** anywhere on your screen
-3. Click and drag to select the area you want to capture
-4. Review the preview — click **Accept** to proceed
-5. Neolithic runs OCR on the selection and opens a chat window
-6. The extracted text is automatically sent to GPT-4 with a default prompt
-7. Continue the conversation to ask follow-up questions about the captured content
+Run from the repository root, since the OCR model is loaded from `./tessdata`:
 
-## Project Structure
+```bash
+mvn compile exec:java -Dexec.mainClass="org.codered.neolithic.Neolithic"
+```
+
+1. Press `Ctrl` + `Shift` to start a capture. A preview window opens.
+2. Click and drag over the area you want. The preview updates when you release the mouse.
+3. Click **Accept** (or press the hotkey again). Press `Esc` or close the preview to cancel.
+4. In the "Converted Text" dialog, correct the OCR text if needed and enter an instruction. **Refresh Text** runs OCR on the image again.
+5. Click **Send to AI**. The response appears in a chat window, where you can ask follow-up questions.
+
+Closing the chat window exits the application.
+
+## Project structure
 
 ```
 src/main/java/org/codered/neolithic/
-├── customize/          # Configuration management
-├── images/             # OCR conversion, image preprocessing, UI
-│   ├── conversion/     # Image-to-text pipeline
-│   ├── processing/     # Image manipulation utilities
-│   └── ui/             # Conversion result UI
-├── openai/             # OpenAI API handler and request models
-├── screenshot/         # Screen capture tool and hotkey listener
-├── utils/              # Config reader (env + JSON)
-└── Neolithic.java      # Application entry point
+  Neolithic.java          entry point
+  screenshot/             global hotkey and screen area selection
+  images/conversion/      Tesseract OCR
+  images/processing/      text cleanup, spelling and grammar correction
+  images/ui/              converted text dialog
+  openai/                 OpenAI request and chat window
+  utils/                  API key lookup (environment variable or config.json)
+tessdata/                 English Tesseract model
 ```
-
-## License
-
-Open-source under the MIT license.
